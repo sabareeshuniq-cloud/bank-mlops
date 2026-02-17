@@ -1,4 +1,13 @@
 {
-  "Version":"2012-10-17",
-  "Statement":[{"Effect":"Allow","Action":["lambda:InvokeFunction","s3:GetObject"],"Resource":"*"}]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "sagemaker:UpdateEndpoint",
+        "sagemaker:DescribeEndpoint"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
 }
