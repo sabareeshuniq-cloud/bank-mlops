@@ -208,3 +208,29 @@ step_eval = ProcessingStep(
     ],
     property_files=[evaluation_report]
 )
+
+
+from sagemaker.model_monitor import DataCaptureConfig
+
+data_capture_config = DataCaptureConfig(
+    enable_capture=True,
+    sampling_percentage=100,
+    destination_s3_uri=f"s3://{BUCKET}/monitoring/datacapture"
+)
+
+model = Model(
+    image_uri=estimator.training_image_uri(),
+    model_data=step_train.properties.ModelArtifacts.S3ModelArtifacts,
+    role=ROLE,
+    entry_point="inference/inference.py",
+    sagemaker_session=session,
+)
+
+endpoint_config_step = EndpointConfigStep(
+    name="CreateEndpointConfig",
+    endpoint_config_name="bank-churn-config",
+    model_name=create_model_step.properties.ModelName,
+    initial_instance_count=instance_count,
+    instance_type="ml.m5.large",
+    data_capture_config=data_capture_config
+)
