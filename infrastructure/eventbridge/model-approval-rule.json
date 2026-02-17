@@ -1,1 +1,7 @@
-{"Source":"bank-mlops","DetailType":"ModelApproval","Detail":{"status":"pending"}}
+{
+  "source": ["aws.sagemaker"],
+  "detail-type": ["SageMaker Model Package State Change"],
+  "detail": {
+    "ModelApprovalStatus": ["Approved"]
+  }
+}
