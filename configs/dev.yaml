@@ -1,18 +1,10 @@
-project: bank-mlops
+project: bank-churn-mlops
 region: ap-south-1
-bucket: bank-mlops-dev
 
-training:
-  instance_type: ml.m5.large
-  instance_count: 1
+training_instance: ml.m5.large
+processing_instance: ml.m5.large
 
-processing:
-  instance_type: ml.m5.xlarge
+endpoint_instance: ml.t2.medium
+min_accuracy: 0.75
 
-endpoint:
-  instance_type: ml.m5.large
-  min_capacity: 1
-  max_capacity: 5
-
-model:
-  approval_threshold_auc: 0.85
+bucket_prefix: bank-mlops-dev
