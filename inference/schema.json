@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bank input",
+  "type": "object",
+  "properties": {
+    "feat_0": {"type":"number"},
+    "feat_1": {"type":"number"},
+    "age": {"type":"integer"},
+    "salary": {"type":"number"}
+  },
+  "required": ["feat_0","feat_1","age","salary"]
+}

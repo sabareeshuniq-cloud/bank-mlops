@@ -1,0 +1,7 @@
+env: prod
+debug: false
+s3_bucket: your-prod-bucket
+training:
+  num_boost_round: 200
+  max_depth: 6
+  eta: 0.05

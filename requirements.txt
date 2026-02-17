@@ -1,0 +1,8 @@
+boto3
+sagemaker>=2.200.0
+pandas
+numpy
+scikit-learn
+xgboost
+pyarrow
+pyspark
