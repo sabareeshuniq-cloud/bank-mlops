@@ -1,1 +1,10 @@
-{"AlarmName":"ModelDriftAlarm","Threshold":0.2,"ComparisonOperator":"GreaterThanThreshold"}
+{
+  "AlarmName": "ModelDriftAlarm",
+  "MetricName": "constraint_violations",
+  "Namespace": "aws/sagemaker/Endpoints/model-metrics",
+  "Threshold": 1,
+  "ComparisonOperator": "GreaterThanThreshold",
+  "EvaluationPeriods": 1,
+  "Period": 300,
+  "Statistic": "Sum"
+}
