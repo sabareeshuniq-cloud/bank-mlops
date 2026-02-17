@@ -101,14 +101,44 @@ model = Model(
     sagemaker_session=session
 )
 
-step_register = ModelStep(
-    name="RegisterModel",
-    step_args=model.register(
-        content_types=["text/csv"],
-        response_types=["text/csv"],
-        model_package_group_name=MODEL_PACKAGE_GROUP_NAME
-    )
+model = Model(
+    image_uri=estimator.training_image_uri(),
+    model_data=step_train.properties.ModelArtifacts.S3ModelArtifacts,
+    role=ROLE,
+    entry_point="inference/inference.py",
+    sagemaker_session=session
 )
+
+create_model_step = CreateModelStep(
+    name="CreateSageMakerModel",
+    model=model
+)
+
+from sagemaker.workflow.parameters import ParameterInteger
+
+instance_count = ParameterInteger(name="InstanceCount", default_value=1)
+
+endpoint_config_step = EndpointConfigStep(
+    name="CreateEndpointConfig",
+    endpoint_config_name="bank-churn-config",
+    model_name=create_model_step.properties.ModelName,
+    initial_instance_count=instance_count,
+    instance_type="ml.m5.large"
+)
+
+endpoint_step = EndpointStep(
+    name="DeployEndpoint",
+    endpoint_name="bank-churn-endpoint",
+    endpoint_config_name=endpoint_config_step.properties.EndpointConfigName
+)
+
+step_cond = ConditionStep(
+    name="AccuracyCondition",
+    conditions=[cond],
+    if_steps=[step_register, create_model_step, endpoint_config_step, endpoint_step],
+    else_steps=[]
+)
+
 
 step_cond = ConditionStep(
     name="AccuracyCondition",
