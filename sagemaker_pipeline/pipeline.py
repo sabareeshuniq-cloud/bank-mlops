@@ -12,6 +12,11 @@ from sagemaker.estimator import Estimator
 from sagemaker.model_metrics import MetricsSource, ModelMetrics
 from sagemaker.workflow.model_step import ModelStep
 from sagemaker.model import Model
+from sagemaker.workflow.steps import CreateModelStep
+from sagemaker.workflow.steps import EndpointConfigStep
+from sagemaker.workflow.steps import EndpointStep
+from sagemaker.inputs import CreateModelInput
+
 
 from config import *
 
