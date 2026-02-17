@@ -1,27 +1,17 @@
+# deployment/autoscale.py
+
 import boto3
 
-client = boto3.client('application-autoscaling')
+client = boto3.client("application-autoscaling")
+
+resource_id = "endpoint/bank-churn-endpoint/variant/AllTraffic"
 
 client.register_scalable_target(
-    ServiceNamespace='sagemaker',
-    ResourceId='endpoint/bank-risk-endpoint/variant/AllTraffic',
-    ScalableDimension='sagemaker:variant:DesiredInstanceCount',
+    ServiceNamespace="sagemaker",
+    ResourceId=resource_id,
+    ScalableDimension="sagemaker:variant:DesiredInstanceCount",
     MinCapacity=1,
-    MaxCapacity=10
+    MaxCapacity=4,
 )
 
-client.put_scaling_policy(
-    PolicyName='InvocationsScaling',
-    ServiceNamespace='sagemaker',
-    ResourceId='endpoint/bank-risk-endpoint/variant/AllTraffic',
-    ScalableDimension='sagemaker:variant:DesiredInstanceCount',
-    PolicyType='TargetTrackingScaling',
-    TargetTrackingScalingPolicyConfiguration={
-        'TargetValue': 50.0,
-        'PredefinedMetricSpecification': {
-            'PredefinedMetricType': 'SageMakerVariantInvocationsPerInstance'
-        },
-        'ScaleInCooldown': 300,
-        'ScaleOutCooldown': 60
-    }
-)
+print("Autoscaling target registered")
