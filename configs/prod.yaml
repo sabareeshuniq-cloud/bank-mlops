@@ -1,7 +1,10 @@
-env: prod
-debug: false
-s3_bucket: your-prod-bucket
-training:
-  num_boost_round: 200
-  max_depth: 6
-  eta: 0.05
+project: bank-churn-mlops
+region: ap-south-1
+
+training_instance: ml.m5.xlarge
+processing_instance: ml.m5.large
+
+endpoint_instance: ml.m5.large
+min_accuracy: 0.80
+
+bucket_prefix: bank-mlops-prod
