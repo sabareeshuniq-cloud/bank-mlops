@@ -1,22 +1,28 @@
 import pandas as pd
 import numpy as np
+import os
+
+os.makedirs("data/raw", exist_ok=True)
 
 np.random.seed(42)
-n = 50000
+
+n = 1000
 
 df = pd.DataFrame({
-    "txn_amount": np.random.gamma(2, 1500, n),
-    "account_age_days": np.random.randint(10, 4000, n),
-    "num_failed_logins": np.random.poisson(1.5, n),
-    "device_change": np.random.binomial(1, 0.2, n),
-    "ip_risk_score": np.random.uniform(0, 1, n),
-    "txn_hour": np.random.randint(0,24,n)
+    "age": np.random.randint(18, 70, n),
+    "balance": np.random.randint(0, 100000, n),
+    "tenure": np.random.randint(0, 10, n),
+    "num_products": np.random.randint(1, 4, n),
+    "is_active": np.random.randint(0, 2, n),
+    "estimated_salary": np.random.randint(20000, 150000, n),
 })
 
-df["risk"] = (
-    (df.txn_amount > 20000) |
-    (df.ip_risk_score > 0.8) |
-    (df.device_change == 1) & (df.num_failed_logins > 2)
+df["churn"] = (
+    (df["balance"] < 20000) &
+    (df["is_active"] == 0) &
+    (df["num_products"] == 1)
 ).astype(int)
 
-df.to_csv("payments.csv", index=False)
+df.to_csv("data/raw/data.csv", index=False)
+
+print("Dataset generated at data/raw/data.csv")
