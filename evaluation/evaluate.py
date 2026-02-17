@@ -1,15 +1,35 @@
-from sklearn.metrics import precision_score, recall_score, roc_auc_score
+# evaluation/evaluate.py
+
 import json
+import pandas as pd
+import xgboost as xgb
+from sklearn.metrics import accuracy_score
+import os
 
-precision = precision_score(y_test, pred)
-recall = recall_score(y_test, pred)
-auc = roc_auc_score(y_test, prob)
+MODEL_PATH = "/opt/ml/processing/model/model.xgb"
+TEST_PATH = "/opt/ml/processing/test/test.csv"
+OUTPUT_PATH = "/opt/ml/processing/evaluation"
 
-metrics = {
-    "precision": precision,
-    "recall": recall,
-    "auc": auc
-}
+os.makedirs(OUTPUT_PATH, exist_ok=True)
 
-with open("/opt/ml/processing/evaluation/evaluation.json","w") as f:
-    json.dump(metrics,f)
+print("Loading model...")
+model = xgb.Booster()
+model.load_model(MODEL_PATH)
+
+print("Loading test data...")
+data = pd.read_csv(TEST_PATH, header=None)
+
+y_true = data.iloc[:, 0]
+X_test = data.iloc[:, 1:]
+
+dtest = xgb.DMatrix(X_test)
+
+preds = model.predict(dtest)
+pred_labels = [1 if p > 0.5 else 0 for p in preds]
+
+acc = accuracy_score(y_true, pred_labels)
+
+print("Accuracy:", acc)
+
+with open(f"{OUTPUT_PATH}/evaluation.json", "w") as f:
+    json.dump({"accuracy": float(acc)}, f)
