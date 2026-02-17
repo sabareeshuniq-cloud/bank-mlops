@@ -120,3 +120,56 @@ pipeline = Pipeline(
     parameters=[input_data],
     steps=[step_process, step_train, step_eval, step_cond]
 )
+
+
+from sagemaker.processing import ProcessingInput, ProcessingOutput
+
+step_process = ProcessingStep(
+    name="ProcessData",
+    processor=processor,
+    code="processing/preprocess.py",
+    inputs=[
+        ProcessingInput(
+            source=input_data,
+            destination="/opt/ml/processing/input"
+        )
+    ],
+    outputs=[
+        ProcessingOutput(output_name="train", source="/opt/ml/processing/train"),
+        ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
+    ]
+)
+
+
+from sagemaker.inputs import TrainingInput
+
+step_train = TrainingStep(
+    name="TrainModel",
+    estimator=estimator,
+    inputs={
+        "train": TrainingInput(
+            s3_data=step_process.properties.ProcessingOutputConfig.Outputs["train"].S3Output.S3Uri
+        )
+    }
+)
+
+
+step_eval = ProcessingStep(
+    name="EvaluateModel",
+    processor=processor,
+    code="evaluation/evaluate.py",
+    inputs=[
+        ProcessingInput(
+            source=step_train.properties.ModelArtifacts.S3ModelArtifacts,
+            destination="/opt/ml/processing/model"
+        ),
+        ProcessingInput(
+            source=step_process.properties.ProcessingOutputConfig.Outputs["test"].S3Output.S3Uri,
+            destination="/opt/ml/processing/test"
+        )
+    ],
+    outputs=[
+        ProcessingOutput(output_name="evaluation", source="/opt/ml/processing/evaluation")
+    ],
+    property_files=[evaluation_report]
+)
